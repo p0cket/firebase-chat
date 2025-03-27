@@ -1,36 +1,51 @@
-import { useAuthState } from "react-firebase-hooks/auth"
+import { useState, useEffect } from "react"
+import { onAuthStateChanged, User } from "firebase/auth"
+import { auth } from "./firebase/config"
+import { ChatRoom } from "./components/ChatRoom"
+import { Auth } from "./components/Auth"
 import "./App.css"
-import { initializeApp } from "firebase/app"
-import { getAuth } from "firebase/auth"
-import SignIn from "./components/SignIn"
-import SignOut from "./components/SignOut"
-import ChatRoom from "./components/ChatRoom"
-
-// Firebase configuration from environment variables
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-}
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
 
 function App() {
-  const [user] = useAuthState(auth)
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+      setLoading(false)
+    })
+
+    return unsubscribe
+  }, [])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
-    <div className="App">
-      <header>
-        <h1>Firebase Chat</h1>
-        <SignOut />
+    <div>
+      <header className="p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <div className="container mx-auto flex justify-between items-center">
+          {/* <h1 className="text-xl font-bold text-gray-800 dark:text-white">
+            Firebase Chat
+          </h1> */}
+          {user && (
+            <div className="user-info flex items-center">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-4">
+                {user.displayName || user.email}
+              </span>
+              <button
+                onClick={() => auth.signOut()}
+                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </header>
-      <section>{user ? <ChatRoom /> : <SignIn />}</section>
+
+      <main>{user ? <ChatRoom /> : <Auth />}</main>
     </div>
   )
 }
