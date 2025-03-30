@@ -1,4 +1,3 @@
-import React from "react"
 import { getAuth } from "firebase/auth"
 import { ChatMessageType } from "../types"
 
@@ -34,8 +33,8 @@ function ChatMessage(props: ChatMessageType) {
         {getAvatar()}
       </div>
       <div className={`flex flex-col max-w-[70%] ${messageClass === "sent" ? "items-end" : "items-start"}`}>
-        {displayName && <span className="text-xs text-gray-500 mb-1">{displayName}</span>}
-        <div className={`px-4 py-2 rounded-lg ${
+        {displayName && <span className="text-xs text-gray-500">{displayName}</span>}
+        <div className={`px-4 py-1 rounded-lg ${
           messageClass === "sent" 
             ? "bg-blue-500 text-white rounded-tr-none" 
             : "bg-gray-200 text-gray-800 rounded-tl-none"

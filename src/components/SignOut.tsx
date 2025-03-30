@@ -1,4 +1,3 @@
-import React from 'react'
 import { getAuth, signOut } from "firebase/auth";
 
 function SignOut() {
