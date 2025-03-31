@@ -4,6 +4,7 @@ import { auth } from "./firebase/config"
 import { ChatRoom } from "./components/ChatRoom"
 import { Auth } from "./components/Auth"
 import "./App.css"
+import LobbyHome from "./components/LobbyHome"
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -26,9 +27,6 @@ function App() {
     <div>
       <header className="p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
         <div className="container mx-auto flex justify-between items-center">
-          {/* <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-            Firebase Chat
-          </h1> */}
           {user && (
             <div className="user-info flex items-center">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-4">
@@ -45,7 +43,8 @@ function App() {
         </div>
       </header>
 
-      <main>{user ? <ChatRoom /> : <Auth />}</main>
+      {/* <main>{user ? <ChatRoom /> : <Auth />}</main> */}
+      <main>{user ? <LobbyHome /> : <Auth />}</main>
     </div>
   )
 }
