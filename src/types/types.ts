@@ -38,3 +38,19 @@ export type Room = {
   createdAt: Timestamp
   createdBy: string
 }
+
+// interface LobbyMember {
+//   id: string
+//   displayName: string
+//   isHost: boolean
+// }
+
+// interface Lobby {
+//   id: string
+//   name: string
+//   isActive: boolean
+//   hostId: string
+//   members: LobbyMember[]
+//   createdAt: Timestamp
+//   lobbyCode: string
+// }

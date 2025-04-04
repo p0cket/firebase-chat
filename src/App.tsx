@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { onAuthStateChanged, User } from "firebase/auth"
 import { auth } from "./firebase/config"
-import { ChatRoom } from "./components/ChatRoom"
 import { Auth } from "./components/Auth"
 import "./App.css"
 import LobbyHome from "./components/LobbyHome"

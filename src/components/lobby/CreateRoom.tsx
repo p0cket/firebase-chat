@@ -3,15 +3,12 @@ import { handleCreateLobby, handleJoinLobby } from "../../utils/lobbyUtils"
 
 function CreateRoom({
   errorMessage,
-  lobbyCode,
+  lobbyCode, //typed lobby code
   setLobbyCode,
-}: //  handleJoinLobby, handleCreateLobby
-{
+}: {
   errorMessage: string | null
   lobbyCode: string
   setLobbyCode: (code: string) => void
-  // handleJoinLobby: () => void
-  // handleCreateLobby: () => void
 }) {
   return (
     <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
@@ -41,7 +38,7 @@ function CreateRoom({
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white uppercase"
           />
           <button
-            onClick={handleJoinLobby}
+            onClick={() => handleJoinLobby()}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
           >
             Join
@@ -55,7 +52,7 @@ function CreateRoom({
           Create a Lobby
         </h3>
         <button
-          onClick={handleCreateLobby}
+          onClick={() => handleCreateLobby()}
           className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-colors"
         >
           Create New Lobby

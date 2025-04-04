@@ -9,23 +9,18 @@ import {
   arrayRemove,
   serverTimestamp,
   onSnapshot,
-  Firestore,
 } from "firebase/firestore"
-import { auth } from "../firebase/config"
+import { auth, db } from "../firebase/config"
 import { Lobby, LobbyMember } from "../types/types"
-
-
 
 /**
  * Subscribes to real-time updates for a specified lobby.
  *
- * @param db Firestore database instance.
  * @param lobbyId ID of the lobby to subscribe to.
  * @param setCurrentLobby State setter function for the current lobby.
  * @returns Unsubscribe function to stop listening to updates.
  */
 export const subscribeToLobbyUpdates = (
-  db: Firestore,
   lobbyId: string,
   setCurrentLobby: (lobby: Lobby | null) => void
 ) => {
@@ -53,18 +48,16 @@ export const subscribeToLobbyUpdates = (
  * @param setErrorMessage Function to set error message.
  * @param setIsLoading Function to set loading state.
  * @param setCurrentLobby Function to set the current lobby in state.
- * @param db Firestore database instance.
  */
 export const handleCreateLobby = async ({
   setErrorMessage,
   setIsLoading,
   setCurrentLobby,
-  db,
 }: {
   setErrorMessage: (message: string) => void
   setIsLoading: (isLoading: boolean) => void
   setCurrentLobby: (lobby: Lobby | null) => void
-  db: Firestore
+ 
 }) => {
   // Check if user is authenticated using the singleton instance
   if (!auth.currentUser) {
@@ -115,20 +108,17 @@ export const handleCreateLobby = async ({
  * @param setErrorMessage Function to set error message.
  * @param lobbyCode The lobby code to join.
  * @param setIsLoading Function to set loading state.
- * @param db Firestore database instance.
  * @param setCurrentLobby Function to set the current lobby in state.
  */
 export const handleJoinLobby = async ({
   setErrorMessage,
   lobbyCode,
   setIsLoading,
-  db,
   setCurrentLobby,
 }: {
   setErrorMessage: (message: string) => void
   lobbyCode: string
   setIsLoading: (isLoading: boolean) => void
-  db: Firestore
   setCurrentLobby: (lobby: Lobby | null) => void
 }) => {
   // Ensure the user is signed in
@@ -199,18 +189,15 @@ export const handleJoinLobby = async ({
  *
  * @param currentLobby The current lobby the user is in.
  * @param setIsLoading Function to set loading state.
- * @param db Firestore database instance.
  * @param setCurrentLobby Function to reset the current lobby in state.
  */
 export const handleLeaveLobby = async ({
   currentLobby,
   setIsLoading,
-  db,
   setCurrentLobby,
 }: {
   currentLobby: Lobby | null
   setIsLoading: (isLoading: boolean) => void
-  db: Firestore
   setCurrentLobby: (lobby: Lobby | null) => void
 }) => {
   // Ensure there is an authenticated user and a current lobby
