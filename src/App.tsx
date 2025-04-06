@@ -1,22 +1,13 @@
-import { useState, useEffect } from "react"
-import { onAuthStateChanged, User } from "firebase/auth"
 import { auth } from "./firebase/config"
 import { Auth } from "./components/Auth"
 import "./App.css"
 import LobbyHome from "./components/LobbyHome"
+import { LobbyContextProvider } from "./components/providers/LobbyContext"
+import { useUser } from './hooks/use-context';
 
 function App() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { loading, user } = useUser()
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
-      setLoading(false)
-    })
-
-    return unsubscribe
-  }, [])
 
   if (loading) {
     return <div>Loading...</div>
@@ -43,7 +34,11 @@ function App() {
       </header>
 
       {/* <main>{user ? <ChatRoom /> : <Auth />}</main> */}
-      <main>{user ? <LobbyHome /> : <Auth />}</main>
+      <main>{user ? (
+        <LobbyContextProvider>
+          <LobbyHome />
+        </LobbyContextProvider>
+        ) : <Auth />}</main>
     </div>
   )
 }

@@ -9,6 +9,12 @@ import {
   arrayRemove,
   serverTimestamp,
   onSnapshot,
+  Timestamp,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
 } from "firebase/firestore"
 import { auth, db } from "../firebase/config"
 import { Lobby, LobbyMember } from "../types/types"
@@ -265,7 +271,7 @@ export const handleStartGame = ({
  *
  * @returns A random string consisting of 4 uppercase letters.
  */
-const generateLobbyCode = () => {
+export const generateLobbyCode = () => {
   const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ"
   let result = ""
   for (let i = 0; i < 4; i++) {
@@ -273,3 +279,27 @@ const generateLobbyCode = () => {
   }
   return result
 }
+
+export const createLobby = async (host: LobbyMember) => {
+  const lobbyCode = generateLobbyCode();
+  const newLobby: Omit<Lobby, 'id'> = {
+    lobbyCode: lobbyCode,
+    name: lobbyCode,
+    hostId: host.id,
+    members: [host],
+    isActive: true,
+    createdAt: Timestamp.now(),
+  }
+
+  const docSnap = await addDoc(collection(db, "lobbies"), newLobby);
+
+  return docSnap.id
+}
+
+export const joinLobby = async (lobbyCode: string) => {
+  const lobbiesRef = collection(db, "lobbies");
+  const q = query(lobbiesRef, where("lobbyCode", "==", lobbyCode));
+  const querySnap = await getDocs(q);
+  return querySnap.docs[0]?.id;
+}
+
