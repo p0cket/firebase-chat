@@ -1,5 +1,5 @@
-import { Auth } from "firebase/auth"
-import React from "react"
+// import { Auth } from "firebase/auth"
+// import React from "react"
 import { auth } from "../../firebase/config"
 import { handleLeaveLobby, handleStartGame } from "../../utils/lobbyUtils"
 

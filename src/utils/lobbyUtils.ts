@@ -1,6 +1,6 @@
 // Importing the singleton instance of Firebase Auth from your configuration
 import {
-//   collection,
+  //   collection,
   doc,
   setDoc,
   getDoc,
@@ -63,7 +63,6 @@ export const handleCreateLobby = async ({
   setErrorMessage: (message: string) => void
   setIsLoading: (isLoading: boolean) => void
   setCurrentLobby: (lobby: Lobby | null) => void
- 
 }) => {
   // Check if user is authenticated using the singleton instance
   if (!auth.currentUser) {
@@ -281,8 +280,8 @@ export const generateLobbyCode = () => {
 }
 
 export const createLobby = async (host: LobbyMember) => {
-  const lobbyCode = generateLobbyCode();
-  const newLobby: Omit<Lobby, 'id'> = {
+  const lobbyCode = generateLobbyCode()
+  const newLobby: Omit<Lobby, "id"> = {
     lobbyCode: lobbyCode,
     name: lobbyCode,
     hostId: host.id,
@@ -291,15 +290,61 @@ export const createLobby = async (host: LobbyMember) => {
     createdAt: Timestamp.now(),
   }
 
-  const docSnap = await addDoc(collection(db, "lobbies"), newLobby);
+  const docSnap = await addDoc(collection(db, "lobbies"), newLobby)
 
   return docSnap.id
 }
 
-export const joinLobby = async (lobbyCode: string) => {
-  const lobbiesRef = collection(db, "lobbies");
-  const q = query(lobbiesRef, where("lobbyCode", "==", lobbyCode));
-  const querySnap = await getDocs(q);
-  return querySnap.docs[0]?.id;
+export const joinLobby = async (lobbyCode: string, lobbyMember: LobbyMember) => {
+  const lobbiesRef = collection(db, "lobbies")
+// && where the userId is not in the members array
+  const q = query(lobbiesRef, where("lobbyCode", "==", lobbyCode))
+  const querySnap = await getDocs(q)
+  
+  // Check if we found any matching lobbies
+  if (querySnap.empty) {
+    throw new Error(`No lobby found with code ${lobbyCode}`)
+  }
+  
+  const lobbyId = querySnap.docs[0].id
+  await haveMemberJoinLobby(lobbyId, lobbyMember)
+  return lobbyId
 }
 
+export const haveMemberJoinLobby = async (
+  lobbyUID: string,
+  // memberUid: string
+  lobbyMember: LobbyMember
+) => {
+  try {
+    // First, verify the lobby exists and get current members
+    const lobbyRef = doc(db, "lobbies", lobbyUID)
+    const lobbySnap = await getDoc(lobbyRef)
+    
+    if (!lobbySnap.exists()) {
+      throw new Error("Lobby not found")
+    }
+    
+    const lobbyData = lobbySnap.data()
+    const currentMembers = lobbyData.members || []
+    
+    console.log("Current members:", currentMembers)
+    console.log("New member:", lobbyMember)
+    // Check if the user is already a member of the lobby
+    if (currentMembers.some(m => m.id === lobbyMember.id)) {
+      console.log("User already in lobby")
+      return // Already a member, nothing to do
+    }
+    
+    // If not, add the new member to the existing members array
+    const updatedMembers = [...currentMembers, lobbyMember]
+    
+    // Update the lobby with the new members array
+    await updateDoc(lobbyRef, {
+      members: updatedMembers
+    })
+  } catch (error) {
+    console.error("Error joining lobby:", error)
+    throw error
+  }
+}

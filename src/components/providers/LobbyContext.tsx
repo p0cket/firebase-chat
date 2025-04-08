@@ -15,8 +15,13 @@ export const LobbyContextProvider = ({children}: { children: React.ReactNode }) 
     setLobbyId(lobbyId);
   }
 
-  const handleJoinLobby = async (lobbyCode: string) => {
-    const lobbyId = await joinLobby(lobbyCode);
+  const handleJoinLobby = async (lobbyCode: string, lobbyMember: LobbyMember) => {
+    // set the code, pass in also `LobbyMember` information to join the lobby.
+    // Might need edge case checks like make sure the lobbyMember isn't part of the lobby.
+    // add the lobbyMember to the lobby doc when joining.
+    const lobbyId = await joinLobby(lobbyCode, lobbyMember);
+    // pass the user infomation to create a lobby member.
+    //
     setLobbyId(lobbyId);
   }
 
