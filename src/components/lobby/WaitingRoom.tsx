@@ -20,18 +20,14 @@ function WaitingRoom({
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
-        Lobby: {currentLobby.name}
-      </h2>
-
       {/* Display lobby code */}
-      <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+      <div className="mb-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Share this code with friends:
+          Share this lobby code with friends:
         </p>
-        <p className="text-3xl font-bold tracking-wider text-center text-gray-800 dark:text-white">
-          {currentLobby.id}
-        </p>
+        <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
+          {currentLobby.name}
+        </h2>
       </div>
 
       {/* Display error if present */}
