@@ -295,17 +295,20 @@ export const createLobby = async (host: LobbyMember) => {
   return docSnap.id
 }
 
-export const joinLobby = async (lobbyCode: string, lobbyMember: LobbyMember) => {
+export const joinLobby = async (
+  lobbyCode: string,
+  lobbyMember: LobbyMember
+) => {
   const lobbiesRef = collection(db, "lobbies")
-// && where the userId is not in the members array
+  // && where the userId is not in the members array
   const q = query(lobbiesRef, where("lobbyCode", "==", lobbyCode))
   const querySnap = await getDocs(q)
-  
+
   // Check if we found any matching lobbies
   if (querySnap.empty) {
     throw new Error(`No lobby found with code ${lobbyCode}`)
   }
-  
+
   const lobbyId = querySnap.docs[0].id
   await haveMemberJoinLobby(lobbyId, lobbyMember)
   return lobbyId
@@ -320,28 +323,28 @@ export const haveMemberJoinLobby = async (
     // First, verify the lobby exists and get current members
     const lobbyRef = doc(db, "lobbies", lobbyUID)
     const lobbySnap = await getDoc(lobbyRef)
-    
+
     if (!lobbySnap.exists()) {
       throw new Error("Lobby not found")
     }
-    
+
     const lobbyData = lobbySnap.data()
     const currentMembers = lobbyData.members || []
-    
+
     console.log("Current members:", currentMembers)
     console.log("New member:", lobbyMember)
     // Check if the user is already a member of the lobby
-    if (currentMembers.some(m => m.id === lobbyMember.id)) {
+    if (currentMembers.some((m) => m.id === lobbyMember.id)) {
       console.log("User already in lobby")
       return // Already a member, nothing to do
     }
-    
+
     // If not, add the new member to the existing members array
     const updatedMembers = [...currentMembers, lobbyMember]
-    
+
     // Update the lobby with the new members array
     await updateDoc(lobbyRef, {
-      members: updatedMembers
+      members: updatedMembers,
     })
   } catch (error) {
     console.error("Error joining lobby:", error)
