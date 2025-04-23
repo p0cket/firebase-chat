@@ -16,6 +16,7 @@ export type Lobby = {
   members: LobbyMember[]
   createdAt: Timestamp
   lobbyCode: string
+  roomId: string | null
 }
 
 export type Message = {

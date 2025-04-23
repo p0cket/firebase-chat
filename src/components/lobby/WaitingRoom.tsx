@@ -1,7 +1,10 @@
 // import { Auth } from "firebase/auth"
 // import React from "react"
+import { useNavigate } from "react-router-dom"
 import { auth } from "../../firebase/config"
+import { Lobby, LobbyMember } from "../../types/types"
 import { handleLeaveLobby, handleStartGame } from "../../utils/lobbyUtils"
+import { useState } from "react"
 
 function WaitingRoom({
   // auth,
@@ -11,12 +14,28 @@ function WaitingRoom({
   errorMessage,
 }: {
   // auth: Auth // Firebase auth object
-  currentLobby: any // Current lobby object
+  // currentLobby: any // Current lobby object
+  currentLobby: Lobby // Current lobby object
+
   // handleLeaveLobby: () => void // Function to leave the lobby
   // handleStartGame: () => void // Function to start the game
   errorMessage?: string | null // Optional error message to display
 }) {
+  const navigate = useNavigate() // Add this hook
+
   const isHost = auth.currentUser?.uid === currentLobby.hostId
+  // const [error, setError] = useState<string | null>(initialErrorMessage || null);  // Add state for errors
+  const [error, setError] = useState<string | null>(errorMessage || null) // Add state for errors
+
+  // Create wrapper functions
+  const handleStartGameClick = () => {
+    console.log("handleStartGameClick clicked: Starting game with lobby:", currentLobby)
+    handleStartGame({
+      currentLobby,
+      setErrorMessage: setError,
+      navigate,
+    })
+  }
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
@@ -43,7 +62,7 @@ function WaitingRoom({
           Members
         </h3>
         <ul className="space-y-2">
-          {currentLobby.members.map((member) => (
+          {currentLobby.members.map((member: LobbyMember) => (
             <li
               key={member.id}
               className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
@@ -70,7 +89,7 @@ function WaitingRoom({
       <div className="flex flex-col space-y-3">
         {isHost && (
           <button
-            onClick={handleStartGame}
+            onClick={handleStartGameClick}
             className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-colors"
           >
             Start Game

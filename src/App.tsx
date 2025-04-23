@@ -8,6 +8,7 @@ import { useUser } from "./hooks/use-context"
 // import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 // import CreateRoom from "./components/lobby/CreateRoom"
 import LobbyHome from "./components/LobbyHome"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 // import WaitingRoom from "./components/lobby/WaitingRoom"
 
 function App() {
@@ -42,9 +43,21 @@ function App() {
       {/* <main>{user ? <ChatRoom /> : <Auth />}</main> */}
       <main>
         {user ? (
-          <LobbyContextProvider>
-            <LobbyHome />
-          </LobbyContextProvider>
+          <BrowserRouter>
+            <LobbyContextProvider>
+              <Routes>
+                <Route path="/" element={<LobbyHome />} />
+
+                {/* <Route path="/" element={<CreateRoom />} /> */}
+                {/*  */}
+                {/* <Route path="/lobby/:lobbyId" element={<WaitingRoom />} /> */}
+                {/*  */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+              {/*  */}
+              {/* <LobbyHome /> */}
+            </LobbyContextProvider>
+          </BrowserRouter>
         ) : (
           <Auth />
         )}
@@ -54,6 +67,10 @@ function App() {
 }
 
 export default App
+
+// <LobbyContextProvider>
+//   <LobbyHome />
+// </LobbyContextProvider>
 
 // {user ? (
 //   <BrowserRouter>

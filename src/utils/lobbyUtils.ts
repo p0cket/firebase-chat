@@ -18,6 +18,8 @@ import {
 } from "firebase/firestore"
 import { auth, db } from "../firebase/config"
 import { Lobby, LobbyMember } from "../types/types"
+import { useNavigate } from "react-router-dom"
+// import { useNavigate } from "react-router-dom"
 
 /**
  * Subscribes to real-time updates for a specified lobby.
@@ -236,19 +238,99 @@ export const handleLeaveLobby = async ({
   }
 }
 
+// Make a CreateRoom function, that creates a new room in Firestore.
+/**
+ * Creates a new room in Firestore and associates it with a lobby.
+ *
+ * @param lobbyId The ID of the lobby to associate with the room.
+ * param gameSettings Optional game settings for the room.
+ * @returns The ID of the newly created room.
+ */
+export const createRoom = async (
+  lobbyId: string
+  // gameSettings: Record<string, any> = {}
+) => {
+  console.log("Creating room for lobby:", lobbyId)
+  try {
+    // Get the current lobby data
+    const lobbyRef = doc(db, "lobbies", lobbyId)
+    const lobbySnap = await getDoc(lobbyRef)
+    if (!lobbySnap.exists()) {
+      throw new Error("Lobby not found")
+    }
+    const lobbyData = lobbySnap.data() as Lobby
+
+    // Create a new room document
+    const roomData = {
+      lobbyId: lobbyId,
+      hostId: lobbyData.hostId,
+      members: lobbyData.members,
+      createdAt: serverTimestamp(),
+      status: "waiting", // Possible values: waiting, active, completed
+      // gameSettings,
+      messages: [],
+      // Add any other room-specific fields here
+    }
+
+    // Add the room to Firestore
+    const roomRef = await addDoc(collection(db, "rooms"), roomData)
+
+    // Update the lobby with the room ID
+    await updateDoc(lobbyRef, {
+      roomId: roomRef.id,
+    })
+
+    return roomRef.id
+  } catch (error) {
+    console.error("Error creating room:", error)
+    throw error
+  }
+}
+
+// Make the updateLobbyWithRoomId function, which updates the lobby with the room ID.
+/**
+ * Updates the lobby with the newly created room ID.
+ *
+ * @param lobbyId The ID of the lobby to update.
+ * @param roomId The ID of the room to associate with the lobby.
+ */
+export const updateLobbyWithRoomId = async (
+  lobbyId: string,
+  roomId: string
+) => {
+  console.log("Updating lobby with room ID:", lobbyId, roomId)
+  try {
+    const lobbyRef = doc(db, "lobbies", lobbyId)
+
+    // Update the lobby with the new room ID
+    await updateDoc(lobbyRef, {
+      roomId: roomId,
+    })
+
+    console.log("Lobby updated with new room ID:", roomId)
+  } catch (error) {
+    console.error("Error updating lobby with room ID:", error)
+    throw error
+  }
+}
+
 /**
  * Starts the game (host only) using the singleton auth instance.
  *
  * @param currentLobby The current lobby the user is in.
  * @param setErrorMessage Function to set error message.
+ * @param navigate Function to navigate to another route.
  */
 export const handleStartGame = ({
   currentLobby,
   setErrorMessage,
+  navigate,
 }: {
   currentLobby: Lobby | null
   setErrorMessage: (message: string) => void
+  navigate: (path: string) => void
 }) => {
+  console.log("handleStartGame: Starting game for lobby:", currentLobby)
   // Ensure there is an authenticated user and a current lobby
   if (!auth.currentUser || !currentLobby) return
 
@@ -260,8 +342,24 @@ export const handleStartGame = ({
 
   console.log("Game started with lobby:", currentLobby.id)
   // Here you would typically:
-  // 1. Update the lobby status in Firestore
-  // 2. Redirect players to the game component (using react-router, for example)
+  // 1. Update the lobby status in Firestore, by:
+  // a) creating a new room obj, and
+  createRoom(currentLobby.id)
+    .then((roomId) => {
+      // b) setting the lobby's roomId to the room obj's Unique Id
+      // Update the lobby with the new room ID
+      updateLobbyWithRoomId(currentLobby.id, roomId)
+      // Optionally, redirect to the game component or update state
+      console.log("Game started successfully, room ID:", roomId)
+      // 2. Redirect players to the game component (using react-router, for example)
+      // Do this by navigating to the game route, which is the room's unique ID.
+      // Navigate to the game room page using the room ID
+      navigate(`/room/${roomId}`)
+    })
+    .catch((error) => {
+      console.error("Error starting game:", error)
+    })
+
   // 3. Initialize game state (possibly using React state management or context)
 }
 
@@ -288,6 +386,7 @@ export const createLobby = async (host: LobbyMember) => {
     members: [host],
     isActive: true,
     createdAt: Timestamp.now(),
+    roomId: null,
   }
 
   const docSnap = await addDoc(collection(db, "lobbies"), newLobby)
@@ -331,7 +430,7 @@ export const haveMemberJoinLobby = async (
     const lobbyData = lobbySnap.data() as Lobby //assertion. When pulling data from third parties, when you can't declare you assert
     const currentMembers: LobbyMember[] = lobbyData.members || []
     // const currentMembers = lobbyData.members || []
-    
+
     console.log("Current members:", currentMembers)
     console.log("New member:", lobbyMember)
     // Check if the user is already a member of the lobby
@@ -358,11 +457,11 @@ export const haveMemberJoinLobby = async (
 // Create a room in firestore in firestore room collection
 // (you need all the relevant data into the lobby)
 // Copy the lobby members to the new lobby. Also relevant data
-// 
+//
 // Everyone is listening to the lobby document
 // host is triggering the document to change
 // A change of status in the lobby document, and what the room is
 // room = null if theres a roomId, move into the room
-// 
-// in a useEffect, listen for a change and in the document, 
-// 
+//
+// in a useEffect, listen for a change and in the document,
+//
