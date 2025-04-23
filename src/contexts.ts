@@ -11,6 +11,7 @@ export const UserContext = createContext<UserContextType>({ user: null, loading:
 type LobbyContextType = {
   lobby: Lobby | null,
   loading: boolean
+  // setLobbyCode: (lobbyCode: string, lobbyMember: LobbyMember) => void
   setLobbyCode: (lobbyCode: string) => void
   createLobby: (host: LobbyMember) => void
 }

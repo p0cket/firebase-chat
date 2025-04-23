@@ -13,6 +13,7 @@ export const LobbyContextProvider = ({
   const [lobbyId, setLobbyId] = useState("")
   const [loading, setLoading] = useState(false)
   const [lobby, setLobby] = useState<LobbyType | null>(null)
+  // const [room, setRoom] = useState(null)
 
   const handleCreateLobby = async (host: LobbyMember) => {
     const lobbyId = await createLobby(host)
@@ -36,7 +37,9 @@ export const LobbyContextProvider = ({
     if (lobbyId) {
       setLoading(true)
       const unsubscribe = onSnapshot(doc(db, "lobbies", lobbyId), (doc) => {
+        // if it exists
         if (doc.exists()) {
+          //
           setLobby(doc.data() as LobbyType)
         }
         setLoading(false)
@@ -44,6 +47,28 @@ export const LobbyContextProvider = ({
       return unsubscribe
     }
   }, [lobbyId])
+
+  // useEffect(() => {
+  //   // lobby?.room ?
+  //   if (lobby?.roomId && lobbyId?.roomId !== null) {
+  //     // unsubscribe them to the lobby
+
+  //     //--
+  //     // subscribe them to the room
+  //     //----
+  //     //---
+  //     //--
+  //     //-
+  //     // what states can you game be in?
+  //     // initial state
+  //     // in lobby state
+  //     // gameplay (room) state
+  //     // win/lose state
+  //     //-
+  //     //---
+  //     //-----
+  //   }
+  // }, [lobby])
 
   return (
     <LobbyContext.Provider

@@ -4,9 +4,11 @@ import CreateRoom from "./lobby/CreateRoom"
 import { useLobby } from "../hooks/use-context"
 
 export const LobbyHome = () => {
+  // const { lobby, loading, room } = useLobby()
   const { lobby, loading } = useLobby()
   if (loading) return <Loading />
   if (lobby) return <WaitingRoom currentLobby={lobby} />
+  // if (room) return <Room /> 
   return (
     <CreateRoom />
   )

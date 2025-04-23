@@ -327,10 +327,11 @@ export const haveMemberJoinLobby = async (
     if (!lobbySnap.exists()) {
       throw new Error("Lobby not found")
     }
-
-    const lobbyData = lobbySnap.data()
-    const currentMembers = lobbyData.members || []
-
+    // const lobbyData: Lobby = lobbySnap.data() //declaration. Preferable where you could.
+    const lobbyData = lobbySnap.data() as Lobby //assertion. When pulling data from third parties, when you can't declare you assert
+    const currentMembers: LobbyMember[] = lobbyData.members || []
+    // const currentMembers = lobbyData.members || []
+    
     console.log("Current members:", currentMembers)
     console.log("New member:", lobbyMember)
     // Check if the user is already a member of the lobby
@@ -351,3 +352,17 @@ export const haveMemberJoinLobby = async (
     throw error
   }
 }
+
+// StartGame
+// -- only host can click that button
+// Create a room in firestore in firestore room collection
+// (you need all the relevant data into the lobby)
+// Copy the lobby members to the new lobby. Also relevant data
+// 
+// Everyone is listening to the lobby document
+// host is triggering the document to change
+// A change of status in the lobby document, and what the room is
+// room = null if theres a roomId, move into the room
+// 
+// in a useEffect, listen for a change and in the document, 
+// 

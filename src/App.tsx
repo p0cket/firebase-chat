@@ -1,13 +1,19 @@
 import { auth } from "./firebase/config"
 import { Auth } from "./components/Auth"
 import "./App.css"
-import LobbyHome from "./components/LobbyHome"
+// import LobbyHome from "./components/LobbyHome"
 import { LobbyContextProvider } from "./components/providers/LobbyContext"
-import { useUser } from './hooks/use-context';
+import { useUser } from "./hooks/use-context"
+// import { useLobby, useUser } from "./hooks/use-context"
+// import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+// import CreateRoom from "./components/lobby/CreateRoom"
+import LobbyHome from "./components/LobbyHome"
+// import WaitingRoom from "./components/lobby/WaitingRoom"
 
 function App() {
   const { loading, user } = useUser()
-
+  // const { lobby, loading } = useLobby()//naw
+  // const { lobby } = useLobby()//naw
 
   if (loading) {
     return <div>Loading...</div>
@@ -34,13 +40,35 @@ function App() {
       </header>
 
       {/* <main>{user ? <ChatRoom /> : <Auth />}</main> */}
-      <main>{user ? (
-        <LobbyContextProvider>
-          <LobbyHome />
-        </LobbyContextProvider>
-        ) : <Auth />}</main>
+      <main>
+        {user ? (
+          <LobbyContextProvider>
+            <LobbyHome />
+          </LobbyContextProvider>
+        ) : (
+          <Auth />
+        )}
+      </main>
     </div>
   )
 }
 
 export default App
+
+// {user ? (
+//   <BrowserRouter>
+//     <LobbyContextProvider>
+//       <Routes>
+//         <Route path="/" element={<CreateRoom />} />
+//         {/*  */}
+//         {/* <Route path="/lobby/:lobbyId" element={<WaitingRoom />} /> */}
+//         {/*  */}
+//         <Route path="*" element={<Navigate to="/" replace />} />
+//       </Routes>
+//       {/*  */}
+//       {/* <LobbyHome /> */}
+//     </LobbyContextProvider>
+//   </BrowserRouter>
+// ) : (
+//   <Auth />
+// )}
