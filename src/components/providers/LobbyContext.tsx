@@ -4,6 +4,7 @@ import { Lobby as LobbyType, LobbyMember } from "../../types/types"
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { createLobby, joinLobby } from "../../utils/lobbyUtils"
+import { useNavigate } from "react-router-dom"
 
 export const LobbyContextProvider = ({
   children,
@@ -14,9 +15,11 @@ export const LobbyContextProvider = ({
   const [loading, setLoading] = useState(false)
   const [lobby, setLobby] = useState<LobbyType | null>(null)
   // const [room, setRoom] = useState(null)
+  const navigate = useNavigate()
 
   const handleCreateLobby = async (host: LobbyMember) => {
-    const lobbyId = await createLobby(host)
+    const lobbyId = await createLobby(host, navigate)
+
     setLobbyId(lobbyId)
   }
 

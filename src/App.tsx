@@ -8,8 +8,32 @@ import { useUser } from "./hooks/use-context"
 // import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 // import CreateRoom from "./components/lobby/CreateRoom"
 import LobbyHome from "./components/LobbyHome"
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import {
+  BrowserRouter,
+  createBrowserRouter,
+  Navigate,
+  Route,
+  RouterProvider,
+  Routes,
+} from "react-router-dom"
+import VariableRoute from "./components/fakeRouteStuff/VariableRoute"
+import Calendar from "./components/fakeRouteStuff/Calendar"
+import AnotherComponent from "./components/fakeRouteStuff/AnotherComponent"
+import WaitingRoom from "./components/lobby/WaitingRoom"
 // import WaitingRoom from "./components/lobby/WaitingRoom"
+const router = createBrowserRouter([
+  // { path: "/", element: <Calendar /> },
+  { path: "/", element: <LobbyHome /> },
+  // { path: "/lobbies/:id", element: <LobbyHome /> },
+
+  // if (lobby) return <WaitingRoom currentLobby={lobby} />
+  // { path: "/lobbies/:id", element: <WaitingRoom /> },
+
+  { path: "/another", element: <AnotherComponent /> },
+
+  { path: "/calendar/:id", element: <Calendar /> },
+  { path: "*", element: <VariableRoute /> },
+])
 
 function App() {
   const { loading, user } = useUser()
@@ -43,22 +67,20 @@ function App() {
       {/* <main>{user ? <ChatRoom /> : <Auth />}</main> */}
       <main>
         {user ? (
-          <BrowserRouter>
-            <LobbyContextProvider>
-              <Routes>
+          // <BrowserRouter>
+          <LobbyContextProvider>
+            <RouterProvider router={router} />
+            {/* <Routes>
                 <Route path="/" element={<LobbyHome />} />
-
-                {/* <Route path="/" element={<CreateRoom />} /> */}
-                {/*  */}
-                {/* <Route path="/lobby/:lobbyId" element={<WaitingRoom />} /> */}
-                {/*  */}
+                <Route path="/lobby/:lobbyId" element={<VariableRoute />} />
+                <Route path="/generic" element={<Calendar />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-              {/*  */}
-              {/* <LobbyHome /> */}
-            </LobbyContextProvider>
-          </BrowserRouter>
+              </Routes> */}
+            {/*  */}
+            {/* <LobbyHome /> */}
+          </LobbyContextProvider>
         ) : (
+          // </BrowserRouter>
           <Auth />
         )}
       </main>

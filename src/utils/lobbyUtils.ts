@@ -18,7 +18,7 @@ import {
 } from "firebase/firestore"
 import { auth, db } from "../firebase/config"
 import { Lobby, LobbyMember } from "../types/types"
-import { useNavigate } from "react-router-dom"
+import { NavigateFunction, useNavigate } from "react-router-dom"
 // import { useNavigate } from "react-router-dom"
 
 /**
@@ -377,7 +377,11 @@ export const generateLobbyCode = () => {
   return result
 }
 
-export const createLobby = async (host: LobbyMember) => {
+export const createLobby = async (
+  host: LobbyMember,
+  // navigate: (path: string) => void
+  navigate: NavigateFunction
+) => {
   const lobbyCode = generateLobbyCode()
   const newLobby: Omit<Lobby, "id"> = {
     lobbyCode: lobbyCode,
@@ -390,6 +394,8 @@ export const createLobby = async (host: LobbyMember) => {
   }
 
   const docSnap = await addDoc(collection(db, "lobbies"), newLobby)
+
+  navigate(`/lobbies/${lobbyCode}`)
 
   return docSnap.id
 }

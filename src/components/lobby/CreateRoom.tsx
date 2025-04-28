@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { useLobby, useUser } from "../../hooks/use-context"
+import { Link } from "react-router-dom"
+import Calendar from "../fakeRouteStuff/Calendar"
 // import { handleJoinLobby } from "../../utils/lobbyUtils"
 
 function CreateRoom() {
@@ -9,7 +11,7 @@ function CreateRoom() {
   const { user } = useUser()
   if (!user) return null
 
-  const createMemberObj = (isHost:boolean = false) => {
+  const createMemberObj = (isHost: boolean = false) => {
     return {
       id: user.uid,
       displayName: user.displayName || "Anonymous",
@@ -23,6 +25,7 @@ function CreateRoom() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <Calendar />
       <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white text-center">
         Game Lobby
       </h2>
@@ -47,7 +50,7 @@ function CreateRoom() {
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white uppercase"
           />
           <button
-          // we need to pass in the lobby code and the member object
+            // we need to pass in the lobby code and the member object
             onClick={() => setLobbyCode(formLobbyCode, createMemberObj())}
             // onClick={handleCreateLobby}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
